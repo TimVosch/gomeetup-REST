@@ -21,7 +21,7 @@ router.post('/', (req, res) => {
     }
     // Check if the password is correct
     var token = jwt.sign({ username: userAuth.username}, req.app.get('JWTSecret'), {
-      expiresIn: 60*60*24 // expires in 1 day
+      expiresIn: req.app.get('JWTExpiration') // expires in 1 day
     });
 
     res.send({ success: true, token});
