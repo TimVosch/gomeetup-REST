@@ -22,9 +22,9 @@ router.post('/', (req, res) => {
     }
 
     // Find the correct permissions for this user
-    UserPermissionModel.findById(userAuth.id).then((userPermission) => {
+    UserPermissionModel.findOne({ userId: userAuth.id}).then((userPermission) => {
       // Sign the token with the permissions embedded
-      var token = jwt.sign({ username: userAuth.username, permissions: userPermission}, req.app.get('JWTSecret'), {
+      var token = jwt.sign({ username: userAuth.username, permissions: userPermission.permissions}, req.app.get('JWTSecret'), {
         expiresIn: req.app.get('JWTExpiration') 
       });
       res.send({ success: true, token});
