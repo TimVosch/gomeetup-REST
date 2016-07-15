@@ -9,9 +9,9 @@ module.exports = function(req, res, next) {
       if (err)
         res.status(403).send({success: false, message: "Failed to authenticate token"});
       else {
-        req.jwt = {
+        req.user = {
           token,
-          payload: decoded
+          permissons: decoded.permissions
         };
         next();
       }
