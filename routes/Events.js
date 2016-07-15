@@ -2,10 +2,15 @@ var express = require('express');
 var mongoose = require('mongoose');
 var router = express.Router();
 
-// Schemas
+/**
+ * Load mongoose EventModel
+ */
 var EventModel = require('../models/EventModel.js');
 
-// Verify parameters (should this be a new module?)
+/**
+ * Verify an id as ObjectId for MongoDB
+ * If possible convert it.
+ */
 function verifyAndConvertId(id, res) {
   if (id === undefined || typeof id == typeof undefined)
     res.status(400).send({ success: false, message: "No `id` provided" });
@@ -19,13 +24,18 @@ function verifyAndConvertId(id, res) {
   }
 }
 
-// GET users listing.
+/**
+ * GET returns all active events
+ */
 router.get('/events', (req, res) => {
   EventModel.find().then(events => {
     res.send(events);
   });
 });
 
+/**
+ * GET returns an event by ID
+ */
 router.get('/events/:id', (req, res) => {
   var id = verifyAndConvertId(req.params.id, res);
   if (!id) return;
@@ -39,7 +49,9 @@ router.get('/events/:id', (req, res) => {
 });
 
 
-// Add new event
+/**
+ * POST creates a new event
+ */
 router.post('/events', (req, res) => {
   var event = new EventModel(req.body);
   event.save()
@@ -52,7 +64,9 @@ router.post('/events', (req, res) => {
 });
 
 
-// Delete an event
+/**
+ * DELETE removes an event by ID
+ */
 router.delete('/events', (req, res) => {
   // Convert ID and remove the item
   var id = verifyAndConvertId(req.body.id, res);
