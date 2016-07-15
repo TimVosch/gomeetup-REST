@@ -3,6 +3,7 @@ var router = express.Router();
 var jwt = require('jsonwebtoken');
 
 var UserAuthModel = require('../models/UserAuthModel');
+var UserPermissionModel = require('../models/UserPermissionModel');
 
 /**
  * POST Authenticate a user.
@@ -14,17 +15,20 @@ router.post('/', (req, res) => {
     return;
   }
   UserAuthModel.findOne({ username: req.body.username }).then((userAuth) => {
-    // Check if the user exists
+    // Check if the user exists and password is correct (this if check is a bit double/redundant)
     if (!userAuth || req.body.password !== req.body.password) {
       res.status(403).send({ success: false, message: "Username or password invalid" });
       return;
     }
-    // Check if the password is correct
-    var token = jwt.sign({ username: userAuth.username}, req.app.get('JWTSecret'), {
-      expiresIn: req.app.get('JWTExpiration') // expires in 1 day
-    });
 
-    res.send({ success: true, token});
+    // Find the correct permissions for this user
+    UserPermissionModel.findById(userAuth.id).then((userPermission) => {
+      // Sign the token with the permissions embedded
+      var token = jwt.sign({ username: userAuth.username, permissions: userPermission}, req.app.get('JWTSecret'), {
+        expiresIn: req.app.get('JWTExpiration') 
+      });
+      res.send({ success: true, token});
+    })
   });
 });
 
