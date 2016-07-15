@@ -13,12 +13,12 @@ var EventModel = require('../models/EventModel.js');
  */
 function verifyAndConvertId(id, res) {
   if (id === undefined || typeof id == typeof undefined)
-    res.status(400).send({ success: false, message: "No `id` provided" });
+    res.status(400).send({ success: false, message: "No id provided" });
   else {
     try {
       return mongoose.Types.ObjectId(id);
     } catch (e) {
-      res.status(400).send({ success: false, message: "Provided `id` is invalid" });
+      res.status(400).send({ success: false, message: "Provided id is invalid" });
       return false;
     }
   }
@@ -27,7 +27,7 @@ function verifyAndConvertId(id, res) {
 /**
  * GET returns all active events
  */
-router.get('/events', (req, res) => {
+router.get('/', (req, res) => {
   EventModel.find().then(events => {
     res.send(events);
   });
@@ -36,7 +36,7 @@ router.get('/events', (req, res) => {
 /**
  * GET returns an event by ID
  */
-router.get('/events/:id', (req, res) => {
+router.get('/:id', (req, res) => {
   var id = verifyAndConvertId(req.params.id, res);
   if (!id) return;
   EventModel.findById(id)
@@ -52,7 +52,7 @@ router.get('/events/:id', (req, res) => {
 /**
  * POST creates a new event
  */
-router.post('/events', (req, res) => {
+router.post('/', (req, res) => {
   var event = new EventModel(req.body);
   event.save()
     .then(newEvent => {
@@ -67,7 +67,7 @@ router.post('/events', (req, res) => {
 /**
  * DELETE removes an event by ID
  */
-router.delete('/events', (req, res) => {
+router.delete('/', (req, res) => {
   // Convert ID and remove the item
   var id = verifyAndConvertId(req.body.id, res);
   if (!id) return;
@@ -77,7 +77,7 @@ router.delete('/events', (req, res) => {
       if (event)
         res.send(event);
       else
-        res.status(400).send({ success: false, message: "No event found with provided `id`" })
+        res.status(400).send({ success: false, message: "No event found with provided id" })
     })
     .catch(e => {
       res.send(e);
