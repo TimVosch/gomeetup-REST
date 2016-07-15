@@ -16,6 +16,12 @@ var port = normalizePort(process.env.PORT || '8080');
 app.set('port', port);
 
 /**
+ * Get JWT Secret from environment and store in Express.
+ */
+
+app.set('JWTSecret', process.env.APP_SECRET || 'DEBUG');
+
+/**
  * Create HTTP server.
  */
 
