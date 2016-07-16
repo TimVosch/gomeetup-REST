@@ -9,7 +9,7 @@ var UserPermissionModel = require('../models/UserPermissionModel');
  * POST Authenticate a user.
  * This provides a JWT token to use if authenticated correctly.
  */
-router.post('/', (req, res) => {
+router.post('/user', (req, res) => {
   if (!req.body.username || !req.body.password) {
     res.status(400).send({ success: false, message: "Username or password missing" });
     return;
@@ -31,5 +31,6 @@ router.post('/', (req, res) => {
     })
   });
 });
+
 
 module.exports = router;
