@@ -6,4 +6,6 @@ module.exports = mongoose.model('user_information', user_information_schema);
 /**
  * The user_information collections contains general information about a user:
  *     - `permissions`
+ * 
+ * Permissions are not yet implemented.
  */

@@ -10,4 +10,6 @@ module.exports = mongoose.model('event', event_schema);
  *     - `longitude`
  *     - `type`
  *     - `name`
+ * 
+ * * Subject to change
  */
