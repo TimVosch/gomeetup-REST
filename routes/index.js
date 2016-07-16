@@ -9,7 +9,7 @@ var permissions = require('./permissions');
 
 // Load all other routers
 router.use('/authentication', authentication);
-router.use(require('../verification/JwtVerification')); // Everything after this requires authentication
+router.use(require('../verification/jwt_verification')); // Everything after this requires authentication
 router.use('/events', events);
 router.use('/permissions', permissions);
 
