@@ -4,7 +4,7 @@ var jwt = require('jsonwebtoken');
 var uuid = require('uuid');
 
 var user_authentication_model = require('../models/user_authentication_model');
-var user_permissions_model = require('../models/user_permissions_model');
+var user_information_model = require('../models/user_information_model');
 
 /**
  * POST Authenticate a user.
@@ -23,7 +23,7 @@ router.post('/user', (req, res) => {
     }
 
     // Find the correct permissions for this user
-    user_permissions_model.findOne({ userId: userAuth.id}).then((userPermission) => {
+    user_information_model.findOne({ userId: userAuth.id}).then((userPermission) => {
       // Create JWT payload
       var payload = {
         uuid: uuid.v4(),
