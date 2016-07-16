@@ -15,19 +15,19 @@ router.post('/user', (req, res) => {
     res.status(400).send({ success: false, message: "Username or password missing" });
     return;
   }
-  user_authentication_model.findOne({ username: req.body.username }).then((userAuth) => {
+  user_authentication_model.findOne({ username: req.body.username }).then((user_auth) => {
     // Check if the user exists and password is correct (this if check is a bit double/redundant)
-    if (!userAuth || req.body.password !== req.body.password) {
+    if (!user_auth || req.body.password !== req.body.password) {
       res.status(403).send({ success: false, message: "Username or password invalid" });
       return;
     }
 
     // Find the correct permissions for this user
-    user_information_model.findOne({ userId: userAuth.id}).then((userPermission) => {
+    user_information_model.findOne({ _id: user_auth.user_id}).then((userPermission) => {
       // Create JWT payload
       var payload = {
         uuid: uuid.v4(),
-        user_id: userAuth.id,
+        user_id: user_auth.id,
         permissions: userPermission.permissions
       };
       // Sign the token with the payload
