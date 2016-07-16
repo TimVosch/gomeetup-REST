@@ -13,7 +13,6 @@ module.exports = function (req, res, next) {
         // Check blacklist
         revoked_jwt_model.findOne({ jwt_uuid: decoded.uuid }).then((revokedToken) => {
           // If the token is not empty then we're blacklisted
-          console.log(revokedToken);
           if (!!revokedToken) {
             res.status(403).send({ success: false, message: "Token revoked", reason: revokedToken.reason });
             return;
