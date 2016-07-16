@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var jwt = require('jsonwebtoken');
+var uuid = require('uuid');
 
 var user_authentication_model = require('../models/user_authentication_model');
 var user_permissions_model = require('../models/user_permissions_model');
@@ -23,8 +24,14 @@ router.post('/user', (req, res) => {
 
     // Find the correct permissions for this user
     user_permissions_model.findOne({ userId: userAuth.id}).then((userPermission) => {
-      // Sign the token with the permissions embedded
-      var token = jwt.sign({ username: userAuth.username, permissions: userPermission.permissions}, req.app.get('JWTSecret'), {
+      // Create JWT payload
+      var payload = {
+        uuid: uuid.v4(),
+        user_id: userAuth._id,
+        permissions: userPermission.permissions
+      };
+      // Sign the token with the payload
+      var token = jwt.sign(payload, req.app.get('JWTSecret'), {
         expiresIn: req.app.get('JWTExpiration') 
       });
       res.send({ success: true, token});
