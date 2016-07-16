@@ -2,8 +2,8 @@ var express = require('express');
 var router = express.Router();
 var jwt = require('jsonwebtoken');
 
-var UserAuthModel = require('../models/UserAuthModel');
-var UserPermissionModel = require('../models/UserPermissionModel');
+var user_auth_model = require('../models/user_auth_model');
+var user_permissions_model = require('../models/user_permissions_model');
 
 /**
  * POST Authenticate a user.
@@ -14,7 +14,7 @@ router.post('/user', (req, res) => {
     res.status(400).send({ success: false, message: "Username or password missing" });
     return;
   }
-  UserAuthModel.findOne({ username: req.body.username }).then((userAuth) => {
+  user_auth_model.findOne({ username: req.body.username }).then((userAuth) => {
     // Check if the user exists and password is correct (this if check is a bit double/redundant)
     if (!userAuth || req.body.password !== req.body.password) {
       res.status(403).send({ success: false, message: "Username or password invalid" });
@@ -22,7 +22,7 @@ router.post('/user', (req, res) => {
     }
 
     // Find the correct permissions for this user
-    UserPermissionModel.findOne({ userId: userAuth.id}).then((userPermission) => {
+    user_permissions_model.findOne({ userId: userAuth.id}).then((userPermission) => {
       // Sign the token with the permissions embedded
       var token = jwt.sign({ username: userAuth.username, permissions: userPermission.permissions}, req.app.get('JWTSecret'), {
         expiresIn: req.app.get('JWTExpiration') 

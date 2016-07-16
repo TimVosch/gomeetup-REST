@@ -3,9 +3,9 @@ var mongoose = require('mongoose');
 var router = express.Router();
 
 /**
- * Load mongoose EventModel
+ * Load mongoose event_model
  */
-var EventModel = require('../models/EventModel.js');
+var event_model = require('../models/event_model.js');
 
 /**
  * Verify an id as ObjectId for MongoDB
@@ -28,7 +28,7 @@ function verifyAndConvertId(id, res) {
  * GET returns all active events
  */
 router.get('/', (req, res) => {
-  EventModel.find().then(events => {
+  event_model.find().then(events => {
     res.send(events);
   });
 });
@@ -39,7 +39,7 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
   var id = verifyAndConvertId(req.params.id, res);
   if (!id) return;
-  EventModel.findById(id)
+  event_model.findById(id)
     .then(event => {
       res.send(event);
     })
@@ -53,7 +53,7 @@ router.get('/:id', (req, res) => {
  * POST creates a new event
  */
 router.post('/', (req, res) => {
-  var event = new EventModel(req.body);
+  var event = new event_model(req.body);
   event.save()
     .then(newEvent => {
       res.send(newEvent);
@@ -71,7 +71,7 @@ router.delete('/', (req, res) => {
   // Convert ID and remove the item
   var id = verifyAndConvertId(req.body.id, res);
   if (!id) return;
-  EventModel.findByIdAndRemove(id)
+  event_model.findByIdAndRemove(id)
     .then(event => {
       // Check if an event was removed
       if (event)

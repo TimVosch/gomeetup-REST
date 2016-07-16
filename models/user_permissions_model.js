@@ -1,4 +1,4 @@
 var mongoose = require('mongoose');
-var UserPermissionSchema = require('../schemas/UserPermissionSchema');
+var user_permissions_schema = require('../schemas/user_permissions_schema');
 
-module.exports = mongoose.model('UserPermission', UserPermissionSchema);
+module.exports = mongoose.model('UserPermission', user_permissions_schema);
