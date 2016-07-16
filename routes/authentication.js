@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var jwt = require('jsonwebtoken');
 
-var user_auth_model = require('../models/user_auth_model');
+var user_authentication_model = require('../models/user_authentication_model');
 var user_permissions_model = require('../models/user_permissions_model');
 
 /**
@@ -14,7 +14,7 @@ router.post('/user', (req, res) => {
     res.status(400).send({ success: false, message: "Username or password missing" });
     return;
   }
-  user_auth_model.findOne({ username: req.body.username }).then((userAuth) => {
+  user_authentication_model.findOne({ username: req.body.username }).then((userAuth) => {
     // Check if the user exists and password is correct (this if check is a bit double/redundant)
     if (!userAuth || req.body.password !== req.body.password) {
       res.status(403).send({ success: false, message: "Username or password invalid" });
