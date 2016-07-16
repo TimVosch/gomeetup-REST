@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var router = express.Router();
 
 // Routes
-var Authentication = require('./Auth');
+var Authentication = require('./Authentication');
 var Events = require('./Events');
 var Permissions = require('./Permissions');
 
