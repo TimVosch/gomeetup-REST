@@ -1,22 +1,33 @@
 var jwt = require('jsonwebtoken');
+var revoked_jwt_model = require('../models/revoked_jwt_model');
 
-module.exports = function(req, res, next) {
+module.exports = function (req, res, next) {
   // Find the JWT Token
   var token = req.body.token || req.query.token || req.headers['x-access-token'];
 
-  if(token) {
+  if (token) {
     jwt.verify(token, req.app.get('JWTSecret'), (err, decoded) => {
       if (err)
-        res.status(403).send({success: false, message: "Failed to authenticate token"});
+        res.status(403).send({ success: false, message: "Failed to authenticate token" });
       else {
-        req.user = {
-          token,
-          permissons: decoded.permissions
-        };
-        next();
+        // Check blacklist
+        revoked_jwt_model.findOne({ jwt_uuid: decoded.uuid }).then((revokedToken) => {
+          // If the token is not empty then we're blacklisted
+          console.log(revokedToken);
+          if (!!revokedToken) {
+            res.status(403).send({ success: false, message: "Token revoked", reason: revokedToken.reason });
+            return;
+          }
+          req.user = {
+            token : {
+              payload: decoded,
+            }
+          };
+          next();
+        });
       }
     });
   } else {
-    res.status(403).send({success: false, message: "No token provided"});
+    res.status(403).send({ success: false, message: "No token provided" });
   }
 };
