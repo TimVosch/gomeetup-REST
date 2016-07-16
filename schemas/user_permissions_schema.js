@@ -6,6 +6,6 @@ var mongoose = require('mongoose');
  * The permissions is an array of strings
  */
 module.exports = mongoose.Schema({
-  userId: {type: mongoose.Schema.Types.ObjectId, required: true},
+  user_id: {type: mongoose.Schema.Types.ObjectId, required: true},
   permissions: {type: [String], required: true},
 });
