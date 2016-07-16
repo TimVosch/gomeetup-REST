@@ -27,7 +27,7 @@ router.post('/user', (req, res) => {
       // Create JWT payload
       var payload = {
         uuid: uuid.v4(),
-        user_id: userAuth._id,
+        user_id: userAuth.id,
         permissions: userPermission.permissions
       };
       // Sign the token with the payload
