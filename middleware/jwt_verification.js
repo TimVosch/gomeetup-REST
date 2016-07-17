@@ -17,10 +17,8 @@ module.exports = function (req, res, next) {
             res.status(403).send({ success: false, message: "Token revoked", reason: revokedToken.reason });
             return;
           }
-          req.user = {
-            token : {
-              payload: decoded,
-            }
+          req.token = {
+            payload: decoded,
           };
           next();
         });
