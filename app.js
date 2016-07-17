@@ -7,7 +7,7 @@ var app = express();
  * The base router.
  * Other routes extend from there
  */
-var routerIndex = require('./routes/index');
+var routerIndex = require('./routes/index_route');
 
 /**
  * Use bluebird for mongoose promises

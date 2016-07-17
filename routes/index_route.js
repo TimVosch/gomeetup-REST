@@ -3,14 +3,14 @@ var mongoose = require('mongoose');
 var router = express.Router();
 
 // Routes
-var authentication = require('./authentication');
-var events = require('./events');
-var permissions = require('./permissions');
+var authentication_route = require('./authentication_route');
+var events_route = require('./events_route');
+var permissions_route = require('./permissions_route');
 
 // Load all other routers
-router.use('/authentication', authentication);
+router.use('/authentication', authentication_route);
 router.use(require('../middleware/jwt_verification')); // Everything after this requires authentication
-router.use('/events', events);
-router.use('/permissions', permissions);
+router.use('/events', events_route);
+router.use('/permissions', permissions_route);
 
 module.exports = router;
