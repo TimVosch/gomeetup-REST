@@ -17,12 +17,14 @@
     "url": "https://github.com/TimVosch/gomeetup-REST/issues"
   },
   "homepage": "https://github.com/TimVosch/gomeetup-REST#readme",
-  "devDependencies": {
+  "dependencies": {
     "bluebird": "^3.4.1",
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "jsonwebtoken": "^7.1.6",
     "mongoose": "^4.5.4",
     "uuid": "^2.0.2"
+  },
+  "devDependencies": {
   }
 }
