@@ -7,9 +7,21 @@ var uuid = require('uuid');
 var jwt = require('jsonwebtoken');
 var user_information_model = require('../models/user_information_model');
 var user_authentication_model = require('../models/user_authentication_model');
+var revoked_jwt_model = require('../models/revoked_jwt_model');
 
 module.exports = {};
 
+/**
+ * POST authenticates a user and creates a jwt with 100% permissions
+ * URL: /api/authentication/user
+ * JWT REQUIRED: no
+ * PERMISSIONS: none
+ * BODY: 
+ * {
+ *  username: string,
+ *  password: string
+ * }
+ */
 module.exports.authenticate_user = (req, res) => {
   if (!req.body.username || !req.body.password) {
     res.status(400).send({ error: true, message: "User or password missing"});
@@ -41,4 +53,27 @@ module.exports.authenticate_user = (req, res) => {
       res.send({token});
     })
   });
-};;
+};
+
+/**
+ * POST revokes a jwt
+ * URL: /api/authentication/jwt/revoke/:jwt_uuid
+ * JWT REQUIRED: yes
+ * PERMISSIONS: 'jwt:revoke'
+ * BODY: 
+ * {
+ *  reason: string, optional
+ * }
+ */
+module.exports.jwt_revoke = (req, res) => {
+  var revoked_jwt = new revoked_jwt_model({
+    jwt_uuid: req.params.jwt_uuid,
+    reason: req.body.reason,
+    expires_at: Date.now() + req.app.get('JWTExpiration') // HAS to be expired after this time
+  });
+  revoked_jwt.save().then(result => {
+    res.sendStatus(200);
+  }).catch(err => {
+    res.status(400).send({ error: true, message: err });
+  });
+};

@@ -3,9 +3,13 @@ var router = express.Router();
 var api = require('../api/api');
 
 /**
- * POST Authenticate a user.
  * This provides a JWT token to use if authenticated correctly.
  */
 router.post('/user', api.authentication.authenticate_user);
+
+/**
+ * jwt subroute, required jwt_verification
+ */
+router.use('/jwt', require('../middleware/jwt_verification'), require('./authentication_jwt_route'));
 
 module.exports = router;
