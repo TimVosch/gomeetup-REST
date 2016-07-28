@@ -10,6 +10,5 @@ var mongoose = require('mongoose');
 }
  */
 module.exports = new mongoose.Schema({
-  user_id: {type: mongoose.Schema.Types.ObjectId, required: true},
   permissions: {type: Object, required: true},
 });
