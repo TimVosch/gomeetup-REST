@@ -3,7 +3,7 @@
  */
 
 var mongoose = require('mongoose');
-var event_model = require('../models/event_model');
+var event_model = mongoose.model('event');
 
 
 /**

@@ -5,9 +5,10 @@
 // Requirements
 var uuid = require('uuid');
 var jwt = require('jsonwebtoken');
-var user_information_model = require('../models/user_information_model');
-var user_authentication_model = require('../models/user_authentication_model');
-var revoked_jwt_model = require('../models/revoked_jwt_model');
+var mongoose = require('mongoose');
+var user_information_model = mongoose.model('user_information');
+var user_authentication_model = mongoose.model('user_authentication');
+var revoked_jwt_model = mongoose.model('revoked_jwt');
 
 module.exports = {};
 

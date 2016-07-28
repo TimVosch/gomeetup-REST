@@ -1,5 +1,6 @@
 var jwt = require('jsonwebtoken');
-var revoked_jwt_model = require('../models/revoked_jwt_model');
+var mongoose = require('mongoose');
+var revoked_jwt_model = mongoose.model('revoked_jwt');
 
 module.exports = function (req, res, next) {
   // Find the JWT Token
