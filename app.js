@@ -4,12 +4,6 @@ var bodyParser = require('body-parser');
 var app = express();
 
 /**
- * The base router.
- * Other routes extend from there
- */
-var routerIndex = require('./routes/index_route');
-
-/**
  * Use bluebird for mongoose promises
  */
 mongoose.Promise = require('bluebird');
@@ -19,6 +13,8 @@ mongoose.Promise = require('bluebird');
  */
 mongoose.connect("mongodb://localhost/test");
 var db = mongoose.connection;
+
+require('./models/load_models').load();
 
 /**
  * Start the server when MongoDB connection is succesfull
@@ -32,8 +28,12 @@ db.once('open', function () {
     extended: true
   }));
 
+  /**
+   * The base router.
+   * Other routes extend from there
+   */
   // Load the base router
-  app.use('/api', routerIndex);
+  app.use('/api', require('./routes/index_route'));
 });
 
 /**
