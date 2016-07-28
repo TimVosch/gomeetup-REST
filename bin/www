@@ -23,6 +23,17 @@ app.set('JWTSecret', process.env.APP_TOKEN_SECRET || 'DEBUG');
 app.set('JWTExpiration', process.env.APP_TOKEN_TIMEOUT || 60*60*24);
 
 /**
+ * Default permissions for a new user.
+ * These could also be set when a user confirms their account through email(?)
+ */
+
+app.set('default_permissions', {
+  events: [
+    'read'
+  ]
+});
+
+/**
  * Create HTTP server.
  */
 
