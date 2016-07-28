@@ -49,7 +49,7 @@ module.exports.authenticate_user = (req, res) => {
       };
       // Sign the token with the payload
       var token = jwt.sign(payload, req.app.get('JWTSecret'), {
-        expiresIn: req.app.get('JWTExpiration')
+        expiresIn: req.app.get('jwt_expiration')
       });
       res.send({token});
     })
@@ -70,7 +70,7 @@ module.exports.jwt_revoke = (req, res) => {
   var revoked_jwt = new revoked_jwt_model({
     jwt_uuid: req.params.jwt_uuid,
     reason: req.body.reason,
-    expires_at: Date.now() + req.app.get('JWTExpiration') // HAS to be expired after this time
+    expires_at: Date.now() + req.app.get('jwt_expiration') // HAS to be expired after this time
   });
   revoked_jwt.save().then(result => {
     res.sendStatus(200);
