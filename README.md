@@ -30,10 +30,6 @@ The node env file can be used to pass the following variables:
  - ```APP_TOKEN_SECRET=DEBUG``` This is the secret that signs the JWT tokens. (**CHANGE THIS**)
  - ```APP_TOKEN_EXPIRATION=86400``` The expire time in seconds for the JWT token.
 
-Routes / Endpoints
----
-See the ```routes/Index.js``` file for more information.
-
 License
 ---
     The MIT License (MIT)
