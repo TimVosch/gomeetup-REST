@@ -74,32 +74,30 @@ module.exports.create_user = (req, res) => {
     user: user_information_id
   });
 
-  // Check if email address or username already exists
-  user_information_model.findOne({ email: req.body.email }).then(user_information_result => {
+  // Things we have to do
+  Promise.all([
+    user_information_model.findOne({ email: req.body.email }),
+    user_authentication_model.findOne({ username: req.body.username })
+  ]).spread((user_information_result, user_authentication_result) => {
+    // Check if username or email already exist.
     if (user_information_result) {
       res.status(503).send({ error: true, message: 'duplicate email adress'});
-      return;
+      throw new Error('error');
     }
-    user_authentication_model.findOne({ username: req.body.username }).then(user_authentication_result => {
-      if (user_authentication_result) {
-        res.status(503).send({ error: true, message: 'duplicate username'});
-        return;
-      }
-      new_user_information.save().then(created_user_information => {
-        new_user_authentication.save().then(created_user_authentication => {
-          res.status(200).send({ message: 'succes' });
-          console.log('created: ', req.body.username);
-        })
-        .catch(error => {
-          res.status(500).send({ error, message: 'internal server error'});
-        });;
-      })
-      .catch(error => {
-        res.status(500).send({ error, message: 'internal server error'});
-      });
-    })
+    if (user_authentication_result) {
+      res.status(503).send({ error: true, message: 'duplicate username'});
+      throw new Error('error');
+    }
+    return Promise.all([
+      new_user_information.save(),
+      new_user_authentication.save()
+    ]);
+  }).spread((created_user_information, created_user_authentication) => {
+    // Succesfully created the user.
+    res.status(200).send({ message: 'user created'});
+  }).catch(error => {
+    res.status(500).send({ error, message: 'internal server error'});
   });
-
 }
 
 /**
