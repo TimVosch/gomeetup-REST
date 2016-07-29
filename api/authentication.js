@@ -56,6 +56,52 @@ module.exports.authenticate_user = (req, res) => {
   });
 };
 
+module.exports.create_user = (req, res) => {
+  // Create an unique ObjectId for new_user_information
+  // this way new_user_authentication can already make a reference
+  user_information_id = mongoose.Types.ObjectId();
+  // Create both models assume everything is good.
+  new_user_information = new user_information_model({
+    _id: user_information_id,
+    first_name: req.body.first_name,
+    last_name: req.body.last_name,
+    email: req.body.email,
+    permissions: req.app.get('default_permissions')
+  });
+  new_user_authentication = new user_authentication_model({
+    username: req.body.username,
+    password: req.body.password,
+    user: user_information_id
+  });
+
+  // Check if email address or username already exists
+  user_information_model.findOne({ email: req.body.email }).then(user_information_result => {
+    if (user_information_result) {
+      res.status(503).send({ error: true, message: 'duplicate email adress'});
+      return;
+    }
+    user_authentication_model.findOne({ username: req.body.username }).then(user_authentication_result => {
+      if (user_authentication_result) {
+        res.status(503).send({ error: true, message: 'duplicate username'});
+        return;
+      }
+      new_user_information.save().then(created_user_information => {
+        new_user_authentication.save().then(created_user_authentication => {
+          res.status(200).send({ message: 'succes' });
+          console.log('created: ', req.body.username);
+        })
+        .catch(error => {
+          res.status(500).send({ error, message: 'internal server error'});
+        });;
+      })
+      .catch(error => {
+        res.status(500).send({ error, message: 'internal server error'});
+      });
+    })
+  });
+
+}
+
 /**
  * POST revokes a jwt
  * URL: /api/authentication/jwt/revoke/:jwt_uuid
