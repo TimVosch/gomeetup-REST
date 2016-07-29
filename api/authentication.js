@@ -12,6 +12,7 @@ var revoked_jwt_model = mongoose.model('revoked_jwt');
 // Exceptions
 var InvalidRequestException = require('../exceptions/InvalidRequestException');
 var ForbiddenRequestException = require('../exceptions/ForbiddenRequestException');
+var ConflictRequestException = require('../exceptions/ConflictRequestException');
 
 
 module.exports = {};
@@ -52,6 +53,8 @@ module.exports.authenticate_user = (req, res) => {
       expiresIn: req.app.get('jwt_expiration')
     });
     res.send({token});
+  }).catch(mongoose.Error.ValidationError, error => {
+    res.status(400).send({ error: error.message });
   }).catch(ForbiddenRequestException, error => {
     res.status(403).send({ error: error.message });
   }).catch(error => {
@@ -98,10 +101,10 @@ module.exports.create_user = (req, res) => {
   ]).spread((user_information_result, user_authentication_result) => {
     // Check if username or email already exist.
     if (user_information_result) {
-      throw new InvalidRequestException('Duplicate email adress');
+      throw new ConflictRequestException('Duplicate email adress');
     }
     if (user_authentication_result) {
-      throw new InvalidRequestException('Duplicate username');
+      throw new ConflictRequestException('Duplicate username');
     }
     // Now save both models to database
     return Promise.all([
@@ -111,8 +114,8 @@ module.exports.create_user = (req, res) => {
   }).spread((created_user_information, created_user_authentication) => {
     // Succesfully created the user.
     res.status(200).send({ message: 'User created'});
-  }).catch(InvalidRequestException, error => {
-    res.status(400).send({ error: error.message });
+  }).catch(ConflictRequestException, error => {
+    res.status(409).send({ error: error.message });
   }).catch(error => {
     res.status(500).send({ error: error.message, error_type: error.name });
   });
