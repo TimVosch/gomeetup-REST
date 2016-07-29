@@ -132,11 +132,13 @@ module.exports.jwt_revoke = (req, res) => {
   var revoked_jwt = new revoked_jwt_model({
     jwt_uuid: req.params.jwt_uuid,
     reason: req.body.reason,
-    expires_at: Date.now() + req.app.get('jwt_expiration') // HAS to be expired after this time
+    expires_at: new Date(Date.now() + req.app.get('jwt_expiration') * 1000) // HAS to be expired after this time
   });
   revoked_jwt.save().then(result => {
     res.sendStatus(200);
-  }).catch(err => {
-    res.status(400).send({ error: true, message: err });
+  }).catch(InvalidRequestException, error => {
+    res.status(400).send({ error: error.message });
+  }).catch(error => {
+    res.status(500).send({ error: error.message, error_type: error.name });
   });
 };
