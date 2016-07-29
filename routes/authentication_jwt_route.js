@@ -6,6 +6,6 @@ var check_permissions = require('../middleware/check_permissions')('jwt');
 /**
  * This will revoke a jwt and put the JWT UUID in the revoked_jwts database
  */
-router.post('/revoke/:jwt_uuid', check_permissions('revoke'), api.authentication.jwt_revoke);
+router.delete('/:jwt_uuid', check_permissions('revoke'), api.authentication.jwt_revoke);
 
 module.exports = router;
