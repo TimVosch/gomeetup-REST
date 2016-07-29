@@ -2,11 +2,12 @@ var express = require('express');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var app = express();
+Promise = require('bluebird');
 
 /**
  * Use bluebird for mongoose promises
  */
-mongoose.Promise = require('bluebird');
+mongoose.Promise = Promise;
 
 /**
  * Connect to MongoDB server
