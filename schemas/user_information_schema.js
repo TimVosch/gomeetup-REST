@@ -12,6 +12,6 @@ var mongoose = require('mongoose');
 module.exports = new mongoose.Schema({
   first_name: {type: string, required: true},
   last_name: {type: string, required: true},
-  email: {type: string, required: true, unique: true},
+  email: {type: string, required: true, unique: true, match: /^([\w\.-]+(?=@))\@([\w\.-]+(?=\.))\.(\w+)$/},
   permissions: {type: Object, required: true},
 });
