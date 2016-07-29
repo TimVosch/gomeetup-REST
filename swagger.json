@@ -108,6 +108,9 @@
             "pattern": "/^([\\w\\.-]+(?=@))\\@([\\w\\.-]+(?=\\.))\\.(\\w+)$/"
           }
         ],
+        "tags": [
+          "Authentication"
+        ],
         "responses": {
           "200": {
             "description": "Succesfully created new account"
