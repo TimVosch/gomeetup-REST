@@ -26,5 +26,6 @@
     "uuid": "^2.0.2"
   },
   "devDependencies": {
+    "swagger-ui": "^2.1.5"
   }
 }
