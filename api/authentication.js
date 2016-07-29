@@ -59,6 +59,20 @@ module.exports.authenticate_user = (req, res) => {
   });
 };
 
+/**
+ * PUT creates a new user with the default permissions
+ * URL: /api/authentication/user
+ * JWT REQUIRED: no
+ * PERMISSIONS: none
+ * BODY:
+ * {
+ *  username: string,
+ *  password: string,
+ *  first_name: string,
+ *  last_name: string,
+ *  email: string 
+ * }
+ */
 module.exports.create_user = (req, res) => {
   // Create an unique ObjectId for new_user_information
   // this way new_user_authentication can already make a reference
