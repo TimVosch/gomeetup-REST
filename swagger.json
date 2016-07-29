@@ -138,6 +138,9 @@
             "format": "UUID V4"
           }
         ],
+        "tags": [
+          "Authentication"
+        ],
         "responses": {
           "200": {
             "description": "Okay",
@@ -175,6 +178,9 @@
     "/events": {
       "get": {
         "summary": "Returns all existing events",
+        "tags": [
+          "Events"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -196,6 +202,9 @@
             "required": true,
             "type": "string"
           }
+        ],
+        "tags": [
+          "Events"
         ],
         "responses": {
           "200": {
@@ -228,6 +237,9 @@
             "required": true,
             "type": "string"
           }
+        ],
+        "tags": [
+          "Events"
         ],
         "responses": {
           "200": {
