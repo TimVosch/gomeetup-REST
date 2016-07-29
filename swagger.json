@@ -144,6 +144,11 @@
         "tags": [
           "Authentication"
         ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Okay",
@@ -184,6 +189,11 @@
         "tags": [
           "Events"
         ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -208,6 +218,11 @@
         ],
         "tags": [
           "Events"
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
         ],
         "responses": {
           "200": {
@@ -244,6 +259,11 @@
         "tags": [
           "Events"
         ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Event removed",
@@ -265,6 +285,14 @@
           }
         }
       }
+    }
+  },
+  "securityDefinitions": {
+    "JWT": {
+      "type": "apiKey",
+      "description": "The Json Web Token that authorizes certain requests.\n\n*Make sure to have the right permissions for the request you're trying!*\n",
+      "name": "x-access-token",
+      "in": "header"
     }
   },
   "definitions": {
