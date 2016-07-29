@@ -1,0 +1,320 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "GoMeetUp REST API",
+    "description": "Meeting up and creating events with a flick of your thumb",
+    "version": "0.5.0",
+    "contact": {
+      "name": "Tim van Osch",
+      "url": "http://www.github.com/timvosch/",
+      "email": "timbox@live.nl"
+    }
+  },
+  "host": "localhost:8080",
+  "schemes": [
+    "http"
+  ],
+  "basePath": "/api",
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/authentication/user": {
+      "post": {
+        "summary": "Authenticates a user.",
+        "description": "Authenticate a user by username and unhashed password to acquire a JWT with all permissions the user has.",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "formData",
+            "description": "The username for the account.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "formData",
+            "description": "The unhashed password for the account.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Authentication"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "jwt": {
+                  "type": "string",
+                  "description": "The jwt with all the user's permissions"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authentication failed.",
+            "schema": {
+              "$ref": "#/definitions/ForbiddenRequestException"
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ]
+      },
+      "put": {
+        "summary": "Creates a new user account",
+        "description": "Create a new user account with the specified information",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "formData",
+            "description": "The username for the new account.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "formData",
+            "description": "The unhashed password for the new account.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "first_name",
+            "in": "formData",
+            "description": "The user's real first name.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "last_name",
+            "in": "formData",
+            "description": "The User's real last name.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "formData",
+            "description": "The user's email address for the confirmation email.",
+            "required": true,
+            "type": "string",
+            "format": "email",
+            "pattern": "/^([\\w\\.-]+(?=@))\\@([\\w\\.-]+(?=\\.))\\.(\\w+)$/"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Succesfully created new account"
+          },
+          "409": {
+            "description": "Email or Username is already being used",
+            "schema": {
+              "$ref": "#/definitions/ConflictRequestException"
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ]
+      }
+    },
+    "/authentication/jwt/{jwt_uuid}": {
+      "delete": {
+        "summary": "Revokes a JWT",
+        "description": "Puts the jwt_uuid in the revoked_jwts database,\nwhich will block the JWT from being used until the expires_at time has passed.\nThe JWT will be banned for a whole JWT lifetime\n",
+        "parameters": [
+          {
+            "name": "jwt_uuid",
+            "in": "path",
+            "description": "The JWT to be revoked it's uuid",
+            "required": true,
+            "type": "string",
+            "format": "UUID V4"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Okay",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "jwt_uuid": {
+                  "type": "string",
+                  "description": "The JWT's uuid"
+                },
+                "reason": {
+                  "type": "string",
+                  "description": "The reason why this JWT was revoked"
+                },
+                "expires_at": {
+                  "type": "string",
+                  "description": "The time in seconds when this document will expire"
+                },
+                "_id": {
+                  "type": "string",
+                  "description": "The ObjectId for MongoDB"
+                }
+              },
+              "example": {
+                "jwt_uuid": "dd000958-893d-48ed-b765-75e208445675",
+                "reason": "debugging",
+                "expires_at": "2016-07-30T21:25:57.507Z",
+                "_id": "579bc9e583a1283419aa16ba"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/events": {
+      "get": {
+        "summary": "Returns all existing events",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/event_model_array"
+            }
+          }
+        }
+      }
+    },
+    "/events/{event_id}": {
+      "get": {
+        "summary": "Returns a specific event",
+        "parameters": [
+          {
+            "name": "event_id",
+            "description": "An event's ObjectId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/event_model"
+            }
+          },
+          "400": {
+            "description": "- Invalid event_id\n- No event found for event_id\n",
+            "schema": {
+              "$ref": "#/definitions/InvalidRequestException"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/InternalServerError"
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deletes the specified event",
+        "parameters": [
+          {
+            "name": "event_id",
+            "description": "Event to be removed it's ObjectId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event removed",
+            "schema": {
+              "$ref": "#/definitions/event_model"
+            }
+          },
+          "400": {
+            "description": "- Invalid event_id\n- No event found for event_id\n",
+            "schema": {
+              "$ref": "#/definitions/InvalidRequestException"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/InternalServerError"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "event_model": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Type of the event"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the event"
+        },
+        "creator": {
+          "type": "string",
+          "description": "The ObjectId from the creator of this event"
+        }
+      }
+    },
+    "event_model_array": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/event_model"
+      }
+    },
+    "ConflictRequestException": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string",
+          "description": "Error message"
+        }
+      }
+    },
+    "ForbiddenRequestException": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string",
+          "description": "Error message"
+        }
+      }
+    },
+    "InvalidRequestException": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string",
+          "description": "Error message"
+        }
+      }
+    },
+    "InternalServerError": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string",
+          "description": "Error messsage"
+        },
+        "error_type": {
+          "type": "string",
+          "description": "Type of error"
+        }
+      }
+    }
+  }
+}
