@@ -4,7 +4,8 @@
 
 var mongoose = require('mongoose');
 var event_model = mongoose.model('event');
-
+// Exceptions
+var InvalidRequestException = require('../exceptions/InvalidRequestException');
 
 /**
  * Verify an id as ObjectId for MongoDB
@@ -35,13 +36,15 @@ module.exports.get_event = (req, res) => {
     }
     event_model.findOne({ _id: id }).then(event => {
       res.send(event);
-      return;
+    }).catch(error => {
+      res.status(500).send({ error: error.message, error_type: error.name });
     });
   } else {
     event_model.find().then(events => {
       res.send(events);
-      return;
-    });
+    }).catch(error => {
+      res.status(500).send({ error: error.message, error_type: error.name });
+    });;
   }
 };
 
@@ -50,10 +53,9 @@ module.exports.create_event = (req, res) => {
   new_event.save()
     .then(event => {
       res.send(event);
-    })
-    .catch(e => {
-      res.sendStatus(500);
-    });
+    }).catch(error => {
+    res.status(500).send({ error: error.message, error_type: error.name });
+  });
 }
 
 module.exports.remove_event = (req, res) => {
@@ -66,12 +68,12 @@ module.exports.remove_event = (req, res) => {
   event_model.findByIdAndRemove(id).then(event => {
       // Check if an event was removed
       if (!event) {
-        res.status(400);
-        throw new Error('No event found with provided id');
+        throw new InvalidRequestException('No event found with provided id');
       }
       res.send(event);
-    })
-    .catch(error => {
-      res.send({ error });
+    }).catch(InvalidRequestException, error => {
+      res.status(400).send({ error: error.message });
+    }).catch(error => {
+      res.status(500).send({ error: error.message, error_type: error.name });
     });
 }
