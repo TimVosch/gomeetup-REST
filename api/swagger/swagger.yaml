@@ -82,6 +82,8 @@ paths:
           type: string
           format: email
           pattern: /^([\w\.-]+(?=@))\@([\w\.-]+(?=\.))\.(\w+)$/
+      tags:
+        - Authentication
       responses:
         200:
           description: Succesfully created new account
@@ -105,6 +107,10 @@ paths:
           required: true
           type: string
           format: UUID V4
+      tags:
+        - Authentication
+      security:
+        - JWT: []
       responses:
         200:
           description: Okay
@@ -131,6 +137,10 @@ paths:
   /events:
     get:
       summary: Returns all existing events
+      tags:
+        - Events
+      security:
+        - JWT: []
       responses:
         200:
           description: Success
@@ -145,6 +155,10 @@ paths:
           in: path
           required: true
           type: string
+      tags:
+        - Events
+      security:
+        - JWT: []
       responses:
         200:
           description: Success
@@ -168,6 +182,10 @@ paths:
           in: path
           required: true
           type: string
+      tags:
+        - Events
+      security:
+        - JWT: []
       responses:
         200:
           description: Event removed
@@ -183,7 +201,16 @@ paths:
           description: Internal server error
           schema:
             $ref: "#/definitions/InternalServerError"
-
+securityDefinitions:
+  # SECURITY
+  JWT:
+    type: apiKey
+    description: |
+      The Json Web Token that authorizes certain requests.
+      
+      *Make sure to have the right permissions for the request you're trying!*
+    name: x-access-token
+    in: header
 definitions:
   # MODELS
   event_model:
