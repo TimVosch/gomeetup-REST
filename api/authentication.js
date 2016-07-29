@@ -9,6 +9,9 @@ var mongoose = require('mongoose');
 var user_information_model = mongoose.model('user_information');
 var user_authentication_model = mongoose.model('user_authentication');
 var revoked_jwt_model = mongoose.model('revoked_jwt');
+// Exceptions
+var InvalidRequestException = require('../exceptions/InvalidRequestException');
+
 
 module.exports = {};
 
@@ -81,22 +84,25 @@ module.exports.create_user = (req, res) => {
   ]).spread((user_information_result, user_authentication_result) => {
     // Check if username or email already exist.
     if (user_information_result) {
-      res.status(503).send({ error: true, message: 'duplicate email adress'});
-      throw new Error('error');
+      throw new InvalidRequestException('Duplicate email adress');
     }
     if (user_authentication_result) {
-      res.status(503).send({ error: true, message: 'duplicate username'});
-      throw new Error('error');
+      throw new InvalidRequestException('Duplicate username');
     }
+    // Now save both models to database
     return Promise.all([
       new_user_information.save(),
       new_user_authentication.save()
     ]);
   }).spread((created_user_information, created_user_authentication) => {
     // Succesfully created the user.
-    res.status(200).send({ message: 'user created'});
+    res.status(200).send({ message: 'User created'});
+  }).catch(InvalidRequestException, error => {
+    res.status(400);
+    res.send({ error: error.message });
   }).catch(error => {
-    res.status(500).send({ error, message: 'internal server error'});
+    res.status(500);
+    res.send({ error: error.message, error_type: error.name });
   });
 }
 
