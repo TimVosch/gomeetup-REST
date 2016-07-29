@@ -30,7 +30,7 @@ module.exports.get_event = (req, res) => {
   if (!!req.params.id) {
     var id = verifyAndConvertId(req.params.id);
     if (!id) {
-      res.status(400).send({ error: true, message: "Invalid event id" });
+      res.status(400).send({ error: 'Invalid event id' });
       return;
     }
     event_model.findOne({ _id: id }).then(event => {
@@ -60,18 +60,18 @@ module.exports.remove_event = (req, res) => {
   // Convert ID and remove the item
   var id = verifyAndConvertId(req.params.id, res);
   if (!id) {
-    res.status(400).send({ error: true, message: "Invalid event id" });
+    res.status(400).send({ error: 'Invalid event id' });
     return;
   }
-  event_model.findByIdAndRemove(id)
-    .then(event => {
+  event_model.findByIdAndRemove(id).then(event => {
       // Check if an event was removed
-      if (event)
-        res.send(event);
-      else
-        res.status(400).send({ error: true, message: "No event found with provided id" })
+      if (!event) {
+        res.status(400);
+        throw new Error('No event found with provided id');
+      }
+      res.send(event);
     })
-    .catch(e => {
-      res.status(500).send(e);
+    .catch(error => {
+      res.send({ error });
     });
 }
