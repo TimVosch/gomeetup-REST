@@ -135,7 +135,7 @@ module.exports.jwt_revoke = (req, res) => {
     expires_at: new Date(Date.now() + req.app.get('jwt_expiration') * 1000) // HAS to be expired after this time
   });
   revoked_jwt.save().then(result => {
-    res.sendStatus(200);
+    res.status(200).send(result);
   }).catch(InvalidRequestException, error => {
     res.status(400).send({ error: error.message });
   }).catch(error => {
