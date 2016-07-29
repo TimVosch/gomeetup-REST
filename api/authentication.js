@@ -11,6 +11,7 @@ var user_authentication_model = mongoose.model('user_authentication');
 var revoked_jwt_model = mongoose.model('revoked_jwt');
 // Exceptions
 var InvalidRequestException = require('../exceptions/InvalidRequestException');
+var ForbiddenRequestException = require('../exceptions/ForbiddenRequestException');
 
 
 module.exports = {};
@@ -28,19 +29,17 @@ module.exports = {};
  */
 module.exports.authenticate_user = (req, res) => {
   if (!req.body.username || !req.body.password) {
-    res.status(400).send({ error: true, message: 'User or password missing'});
+    res.status(400).send({ error: 'Username or password missing'});
     return;
   }
   user_authentication_model.findOne({ username: req.body.username }).populate('user').then((user_auth) => {
     console.log(user_auth);
     // Check if the user exists and password is correct (this if check is a bit double/redundant)
     if (!user_auth || req.body.password !== user_auth.password) {
-      res.status(403).send({ error: true, message: 'Username or password invalid' });
-      return;
+      throw new ForbiddenRequestException('Failed to authenticate');
     }
     if(!user_auth.user) {
-      res.status(500).send({ error: true, message: 'No user information associated with ' + user_auth.user});
-      return;
+      throw new Error('No user information associated with this user');
     }
     // Create JWT payload
     var payload = {
@@ -53,9 +52,10 @@ module.exports.authenticate_user = (req, res) => {
       expiresIn: req.app.get('jwt_expiration')
     });
     res.send({token});
-  })
-  .catch(error => {
-    res.status(500).send({ error: true, message: 'Internal server error'});
+  }).catch(ForbiddenRequestException, error => {
+    res.status(403).send({ error: error.message });
+  }).catch(error => {
+    res.status(500).send({ error: error.message, error_type: error.name });
   });
 };
 
@@ -112,11 +112,9 @@ module.exports.create_user = (req, res) => {
     // Succesfully created the user.
     res.status(200).send({ message: 'User created'});
   }).catch(InvalidRequestException, error => {
-    res.status(400);
-    res.send({ error: error.message });
+    res.status(400).send({ error: error.message });
   }).catch(error => {
-    res.status(500);
-    res.send({ error: error.message, error_type: error.name });
+    res.status(500).send({ error: error.message, error_type: error.name });
   });
 }
 
