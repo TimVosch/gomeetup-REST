@@ -7,6 +7,10 @@ The GoMeetUp api will provide the ability for people to create location based ev
 
 The API will provide different levels of permissions for easy maintenance. Admins or moderators will have the ability to remove unwanted events/meet ups.
 
+Documentation
+---
+Documentation is available [in swagger form](https://timvosch.github.io/gomeetup-REST/#/)
+
 Contributing
 ---
 The api is currently not in a state where we can accept pull-requests. Sorry for the inconvenience.
