@@ -10,9 +10,39 @@ Promise = require('bluebird');
 mongoose.Promise = Promise;
 
 /**
+ * Set testing mode
+ */
+if (process.env.NODE_ENV == 'testing') {
+  app.set('testing', true);
+  console.log('====# Testing mode! #====');
+}
+
+/**
+ * Get JWT settings from environment and store in Express.
+ */
+
+app.set('jwt_secret', process.env.APP_TOKEN_SECRET || 'DEBUG');
+app.set('jwt_expiration', process.env.APP_TOKEN_TIMEOUT || 60*60*24);
+
+/**
+ * Default permissions for a new user.
+ * These could also be set when a user confirms their account through email(?)
+ */
+
+app.set('default_permissions', {
+  events: [
+    'read'
+  ]
+});
+
+/**
  * Connect to MongoDB server
  */
-mongoose.connect("mongodb://localhost/test");
+if (app.get('testing') == true){
+  mongoose.connect("mongodb://localhost/gomeetup_test");
+} else {
+  mongoose.connect("mongodb://localhost/test");
+}
 var db = mongoose.connection;
 
 require('./models/load_models').load();

@@ -16,24 +16,6 @@ var port = normalizePort(process.env.PORT || '8080');
 app.set('port', port);
 
 /**
- * Get JWT settings from environment and store in Express.
- */
-
-app.set('jwt_secret', process.env.APP_TOKEN_SECRET || 'DEBUG');
-app.set('jwt_expiration', process.env.APP_TOKEN_TIMEOUT || 60*60*24);
-
-/**
- * Default permissions for a new user.
- * These could also be set when a user confirms their account through email(?)
- */
-
-app.set('default_permissions', {
-  events: [
-    'read'
-  ]
-});
-
-/**
  * Create HTTP server.
  */
 
