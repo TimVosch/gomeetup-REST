@@ -34,7 +34,6 @@ module.exports.authenticate_user = (req, res) => {
     return;
   }
   user_authentication_model.findOne({ username: req.body.username }).populate('user').then((user_auth) => {
-    console.log(user_auth);
     // Check if the user exists and password is correct (this if check is a bit double/redundant)
     if (!user_auth || req.body.password !== user_auth.password) {
       throw new ForbiddenRequestException('Failed to authenticate');
