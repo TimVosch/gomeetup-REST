@@ -4,7 +4,7 @@
   "description": "The backend REST API for GoMeetUp",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "start": "node ./bin/www"
   },
   "repository": {
@@ -26,6 +26,9 @@
     "uuid": "^2.0.2"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.0.0",
+    "supertest": "^2.0.0",
     "swagger-ui": "^2.1.5"
   }
 }
