@@ -20,20 +20,9 @@ produces:
   - application/json
 paths:
   /authentication/user:
-    post:
+    get:
       summary: Authenticates a user.
-      description: Authenticate a user by username and unhashed password to acquire a JWT with all permissions the user has.
-      parameters:
-        - name: username
-          in: formData
-          description: The username for the account.
-          required: true
-          type: string
-        - name: password
-          in: formData
-          description: The unhashed password for the account.
-          required: true
-          type: string
+      description: Authenticate a user through BASIC AUTH to acquire a JWT with all permissions the user has.
       tags:
         - Authentication
       responses:
@@ -42,7 +31,7 @@ paths:
           schema:
             type: object
             properties:
-              jwt:
+              token:
                 type: string
                 description: The jwt with all the user's permissions
         403:
@@ -51,7 +40,9 @@ paths:
             $ref: "#/definitions/ForbiddenRequestException"
       schemes:
         - https
-    put:
+      security:
+        - BASIC: []
+    post:
       summary: Creates a new user account
       description: Create a new user account with the specified information
       parameters:
@@ -211,6 +202,8 @@ securityDefinitions:
       *Make sure to have the right permissions for the request you're trying!*
     name: x-access-token
     in: header
+  BASIC:
+    type: basic
 definitions:
   # MODELS
   event_model:
