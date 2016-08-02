@@ -1,6 +1,7 @@
 var express = require('express');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
+var debug = require('debug')('gomeetup:app');
 var app = express();
 Promise = require('bluebird');
 
@@ -14,7 +15,7 @@ mongoose.Promise = Promise;
  */
 if (process.env.NODE_ENV == 'testing') {
   app.set('testing', true);
-  console.log('====# Testing mode! #====');
+  debug('====# Testing mode! #====');
 }
 
 /**
