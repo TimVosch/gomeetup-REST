@@ -43,15 +43,7 @@ var test_user_authentication_model = new user_authentication_model({
   user: test_user_information_model._id
 });
 
-/**
- * UNIT TEST
- */
-describe('Authentication', function () {
-  
-  /**
-   * BEFORE THESE TESTS INSERT TEST DATA
-   */
-  before('authentication test', function (done) {
+function populate_database(done) {
     Promise.all([
       user_information_model.remove({}),
       user_authentication_model.remove({})
@@ -65,24 +57,28 @@ describe('Authentication', function () {
     .then(function () {
       done();
     });
-  });
+};
 
-  /**
-   * CLEAR TEST DATA AFTER THESE TESTS
-   */
-  after('authentication test', function (done) {
+function clean_database(done) {
     Promise.all([
       user_information_model.remove({}),
       user_authentication_model.remove({})
-    ]).then(function () {
+    ])
+    .then(function () {
       done();
     });
-  });
+}
 
+/**
+ * UNIT TEST
+ */
+describe('Authentication', function () {
   /**
    * TEST SUCCESFUL AUTHENTICATION
    */
   describe('Succesful user authentication', function () {
+    before('succesful authentication', populate_database);
+    after('succesful authentication', clean_database);
     it('should send 200 OK', function(done){
       server
         .post('/api/authentication/user')
@@ -116,6 +112,8 @@ describe('Authentication', function () {
    * TEST UNSUCCESFUL AUTHENTICATION
    */
   describe('Unsuccesful user authentication', function() {
+    before('unsuccesful authentication', populate_database);
+    after('unsuccesful authentication', clean_database);
     it('should send 403 FORBIDDEN', function(done){
       server
         .post('/api/authentication/user')
@@ -142,7 +140,31 @@ describe('Authentication', function () {
           done();
         });
     });
-  })
+  });
+
+/**
+ * TEST USER CREATION
+ */
+  describe('Succesful account creation', function() {
+    before('account creation', clean_database);
+    after('account creation', clean_database);
+    it('should return 200 OK', function(done) {
+      server
+        .put('/api/authentication/user')
+        .type('form')
+        .send({
+          username: test_user_authentication_model.username,
+          password: test_user_authentication_model.password,
+          first_name: user.test_user_information_model.first_name,
+          last_name: test_user_information_model.last_name,
+          email: test_user_information_model.email
+        })
+        .end(function (err, res) {
+          res.status.should.be.equal(200);
+          done();
+        });
+    });
+  });
 });
 /**
  * END OF UNIT TEST
