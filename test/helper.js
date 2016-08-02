@@ -21,6 +21,13 @@ expect = chai.expect;
  * Pre-logic defined here
  */
 
+// After all tests have run, close the mongoose connection
+// Because our app.js will try to open it again.
+after(function(done) {
+  mongoose.connection.close();
+  done();
+});
+
 // Clear database
 clearDB(function(err) {
   if (err)
@@ -46,6 +53,7 @@ helper.dummy = {
   }
 };
 
+
 /**
  * Populates the database with some dummy data
  */
@@ -65,9 +73,15 @@ helper.populate_database = (done) => {
   Promise.all([
     user_information.save(),
     user_authentication.save()
-  ]).then(function() {
+  ])
+  .then(function() {
     if (!!done)
       done();
+  })
+  .catch(err => {
+    console.error('====# Error occured while populating DB #====');
+    console.error(err);
+    throw err;
   });
 }
 

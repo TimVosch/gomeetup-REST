@@ -3,10 +3,10 @@ var bluebird = require('bluebird');
 var server = helper.server;
 
 describe('Authentication endpoints', function() {
-  describe('Authenticating a user', function () {
+  describe('Authenticating a user (GET /api/authentication/user)', function () {
     beforeEach(helper.populate_database);
     describe('Successful', function () {
-      it('should send 200 OK', function(done) {
+      it('should return status 200 OK', function(done) {
         server
           .get('/api/authentication/user')
           .auth(helper.dummy.username, helper.dummy.password)
@@ -29,7 +29,7 @@ describe('Authentication endpoints', function() {
       });
     });
     describe('Reversed credentials (should not authorize)', function () {
-      it('should send 401 UNAUTHORIZED', function(done) {
+      it('should return status 401 UNAUTHORIZED', function(done) {
         server
           .get('/api/authentication/user')
           .auth(helper.dummy.password, helper.dummy.username)
@@ -52,7 +52,7 @@ describe('Authentication endpoints', function() {
       });
     });
     describe('Wrong credentials (should not authorize)', function () {
-      it('should send 401 UNAUTHORIZED', function(done) {
+      it('should return status 401 UNAUTHORIZED', function(done) {
         server
           .get('/api/authentication/user')
           .auth('wrong username', 'wrong password')
@@ -75,13 +75,77 @@ describe('Authentication endpoints', function() {
       });
     });
   });
-  describe('Creating a user', function () {
+  describe('Creating a user (POST /api/authentication/user)', function () {
     describe('Successful', function () {
-      
+      it('should return 200 OK', function(done) {
+        server
+          .post('/api/authentication/user')
+          .type('form')
+          .send({
+            username: helper.dummy.username,
+            password: helper.dummy.password,
+            first_name: helper.dummy.first_name,
+            last_name: helper.dummy.last_name,
+            email: helper.dummy.email
+          })
+          .end(function(err, res) {
+            res.status.should.be.equal(200);
+            done();
+          });
+      });
+      it('should return a success message', function(done) {
+        server
+          .post('/api/authentication/user')
+          .type('form')
+          .send({
+            username: helper.dummy.username,
+            password: helper.dummy.password,
+            first_name: helper.dummy.first_name,
+            last_name: helper.dummy.last_name,
+            email: helper.dummy.email
+          })
+          .end(function(err, res) {
+            res.body.message.should.exist;
+            res.body.message.should.be.a('string');
+            done();
+          });
+      });
     });
     describe('Unsuccessful', function () {
       beforeEach(helper.populate_database);
-      
+      it('should return 409 CONFLICT', function(done) {
+        server
+          .post('/api/authentication/user')
+          .type('form')
+          .send({
+            username: helper.dummy.username,
+            password: helper.dummy.password,
+            first_name: helper.dummy.first_name,
+            last_name: helper.dummy.last_name,
+            email: helper.dummy.email
+          })
+          .end(function(err, res) {
+            res.status.should.be.equal(409);
+            done();
+          });
+      });
+      it('should return an error message', function(done) {
+        server
+          .post('/api/authentication/user')
+          .type('form')
+          .send({
+            username: helper.dummy.username,
+            password: helper.dummy.password,
+            first_name: helper.dummy.first_name,
+            last_name: helper.dummy.last_name,
+            email: helper.dummy.email
+          })
+          .end(function(err, res) {
+            res.body.error.should.exist;
+            res.body.error.should.be.a('string');
+            done();
+          });
+      });
     });
   });
 });
