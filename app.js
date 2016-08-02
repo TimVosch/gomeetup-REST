@@ -52,7 +52,7 @@ require('./models/load_models').load();
  * Start the server when MongoDB connection is succesfull
  */
 db.once('open', function () {
-  console.log('succesfull connection!');
+  debug('successful database connection!');
 
   // parse json body as well as url parameters
   app.use(bodyParser.json());
