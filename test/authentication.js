@@ -50,6 +50,16 @@ describe('Authentication endpoints', function() {
             done();
           });
       });
+      it('should contain WWW-Authenticate header', function(done) {
+        server
+          .get('/api/authentication/user')
+          .auth(helper.dummy.password, helper.dummy.username)
+          .send()
+          .end(function(err, res) {
+            res.headers['www-authenticate'].should.exist.and.contain('Basic realm');
+            done();
+          });
+      })
     });
     describe('Wrong credentials (should not authorize)', function () {
       it('should return status 401 UNAUTHORIZED', function(done) {
@@ -73,6 +83,16 @@ describe('Authentication endpoints', function() {
             done();
           });
       });
+      it('should contain WWW-Authenticate header', function(done) {
+        server
+          .get('/api/authentication/user')
+          .auth(helper.dummy.password, helper.dummy.username)
+          .send()
+          .end(function(err, res) {
+            res.headers['www-authenticate'].should.exist.and.contain('Basic realm');
+            done();
+          });
+      })
     });
   });
   describe('Creating a user (POST /api/authentication/user)', function () {
