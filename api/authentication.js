@@ -54,11 +54,11 @@ module.exports.authenticate_user = (req, res) => {
     });
     res.send({token});
   }).catch(mongoose.Error.ValidationError, error => {
-    res.status(400);
+    res.status(400).send({ error: error.message });
+  }).catch(UnauthorizedRequestException, error => {
+    res.status(401);
     res.set('WWW-Authenticate', 'Basic realm="Authentication required"');
     res.send({ error: error.message });
-  }).catch(UnauthorizedRequestException, error => {
-    res.status(401).send({ error: error.message });
   }).catch(error => {
     res.status(500).send({ error: error.message, error_type: error.name });
   });
