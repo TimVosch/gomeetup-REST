@@ -5,12 +5,12 @@ var api = require('../api/api');
 /**
  * This provides a JWT token to use if authenticated correctly.
  */
-router.post('/user', api.authentication.authenticate_user);
+router.get('/user', api.authentication.authenticate_user);
 
 /**
  * This will create a new user account
  */
-router.put('/user', api.authentication.create_user);
+router.post('/user', api.authentication.create_user);
 
 /**
  * jwt subroute, required jwt_verification

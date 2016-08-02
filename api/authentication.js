@@ -3,6 +3,8 @@
  */
 
 // Requirements
+var basicAuth = require('basic-auth');
+var debug = require('debug')('gomeetup:authentication');
 var uuid = require('uuid');
 var jwt = require('jsonwebtoken');
 var mongoose = require('mongoose');
@@ -11,6 +13,7 @@ var user_authentication_model = mongoose.model('user_authentication');
 var revoked_jwt_model = mongoose.model('revoked_jwt');
 // Exceptions
 var InvalidRequestException = require('../exceptions/InvalidRequestException');
+var UnauthorizedRequestException = require('../exceptions/UnauthorizedRequestException');
 var ForbiddenRequestException = require('../exceptions/ForbiddenRequestException');
 var ConflictRequestException = require('../exceptions/ConflictRequestException');
 
@@ -18,25 +21,23 @@ var ConflictRequestException = require('../exceptions/ConflictRequestException')
 module.exports = {};
 
 /**
- * POST authenticates a user and creates a jwt with 100% permissions
+ * GET authenticates a user and creates a jwt with 100% permissions
  * URL: /api/authentication/user
  * JWT REQUIRED: no
  * PERMISSIONS: none
- * BODY: 
- * {
- *  username: string,
- *  password: string
- * }
+ * HEADER: BASIC AUTH required
+ * BODY: none
  */
 module.exports.authenticate_user = (req, res) => {
-  if (!req.body.username || !req.body.password) {
-    res.status(400).send({ error: 'Username or password missing'});
-    return;
+  var user = basicAuth(req);
+  if (!user || !user.name || !user.pass) {
+    res.status(400);
+    return res.send({ error: 'BASIC Authorization missing'});
   }
-  user_authentication_model.findOne({ username: req.body.username }).populate('user').then((user_auth) => {
+  user_authentication_model.findOne({ username: user.name }).populate('user').then((user_auth) => {
     // Check if the user exists and password is correct (this if check is a bit double/redundant)
-    if (!user_auth || req.body.password !== user_auth.password) {
-      throw new ForbiddenRequestException('Failed to authenticate');
+    if (!user_auth || user.pass !== user_auth.password) {
+      throw new UnauthorizedRequestException('Failed to authorize user');
     }
     if(!user_auth.user) {
       throw new Error('No user information associated with this user');
@@ -53,16 +54,18 @@ module.exports.authenticate_user = (req, res) => {
     });
     res.send({token});
   }).catch(mongoose.Error.ValidationError, error => {
-    res.status(400).send({ error: error.message });
-  }).catch(ForbiddenRequestException, error => {
-    res.status(403).send({ error: error.message });
+    res.status(400);
+    res.set('WWW-Authenticate', 'Basic realm="Authentication required"');
+    res.send({ error: error.message });
+  }).catch(UnauthorizedRequestException, error => {
+    res.status(401).send({ error: error.message });
   }).catch(error => {
     res.status(500).send({ error: error.message, error_type: error.name });
   });
 };
 
 /**
- * PUT creates a new user with the default permissions
+ * POST creates a new user with the default permissions
  * URL: /api/authentication/user
  * JWT REQUIRED: no
  * PERMISSIONS: none
