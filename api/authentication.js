@@ -117,8 +117,14 @@ module.exports.create_user = (req, res) => {
     // Succesfully created the user.
     res.status(200).send({ message: 'User created'});
   }).catch(ConflictRequestException, error => {
+    // Try to remove both entries, we don't remains in our DB if inserting failed!
+    new_user_information.remove();
+    new_user_authentication.remove();
     res.status(409).send({ error: error.message });
   }).catch(error => {
+    // Try to remove both entries, we don't remains in our DB if inserting failed!
+    new_user_information.remove();
+    new_user_authentication.remove();
     res.status(500).send({ error: error.message, error_type: error.name });
   });
 }
