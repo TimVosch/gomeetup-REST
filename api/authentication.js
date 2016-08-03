@@ -5,6 +5,7 @@
 // Requirements
 var basicAuth = require('basic-auth');
 var debug = require('debug')('gomeetup:authentication');
+var error = require('debug')('gomeetup:internal_errors')
 var uuid = require('uuid');
 var jwt = require('jsonwebtoken');
 var mongoose = require('mongoose');
@@ -53,14 +54,15 @@ module.exports.authenticate_user = (req, res) => {
       expiresIn: req.app.get('jwt_expiration')
     });
     res.send({token});
-  }).catch(mongoose.Error.ValidationError, error => {
-    res.status(400).send({ error: error.message });
-  }).catch(UnauthorizedRequestException, error => {
+  }).catch(mongoose.Error.ValidationError, e => {
+    res.status(400).send({ error: e.message });
+  }).catch(UnauthorizedRequestException, e => {
     res.status(401);
     res.set('WWW-Authenticate', 'Basic realm="Authentication required"');
-    res.send({ error: error.message });
-  }).catch(error => {
-    res.status(500).send({ error: error.message, error_type: error.name });
+    res.send({ error: e.message });
+  }).catch(e => {
+    error(e);
+    res.status(500).send({ error: e.message, error_type: e.name });
   });
 };
 
@@ -116,16 +118,17 @@ module.exports.create_user = (req, res) => {
   }).spread((created_user_information, created_user_authentication) => {
     // Succesfully created the user.
     res.status(200).send({ message: 'User created'});
-  }).catch(ConflictRequestException, error => {
+  }).catch(ConflictRequestException, e => {
     // Try to remove both entries, we don't remains in our DB if inserting failed!
     new_user_information.remove();
     new_user_authentication.remove();
-    res.status(409).send({ error: error.message });
-  }).catch(error => {
+    res.status(409).send({ error: e.message });
+  }).catch(e => {
+    error(e);
     // Try to remove both entries, we don't remains in our DB if inserting failed!
     new_user_information.remove();
     new_user_authentication.remove();
-    res.status(500).send({ error: error.message, error_type: error.name });
+    res.status(500).send({ error: e.message, error_type: e.name });
   });
 }
 
@@ -147,9 +150,10 @@ module.exports.jwt_revoke = (req, res) => {
   });
   revoked_jwt.save().then(result => {
     res.status(200).send(result);
-  }).catch(InvalidRequestException, error => {
-    res.status(400).send({ error: error.message });
-  }).catch(error => {
-    res.status(500).send({ error: error.message, error_type: error.name });
+  }).catch(InvalidRequestException, e => {
+    res.status(400).send({ error: e.message });
+  }).catch(e => {
+    error(e);
+    res.status(500).send({ error: e.message, error_type: e.name });
   });
 };

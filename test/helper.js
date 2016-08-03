@@ -3,7 +3,7 @@
  */
 //
 process.env.NODE_ENV = 'testing';
-process.env.DEBUG = '';
+process.env.DEBUG = 'gomeetup:internal_errors';
 
 var mongoose = require('mongoose');
 var supertest = require('supertest');

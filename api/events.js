@@ -4,6 +4,7 @@
 
 var mongoose = require('mongoose');
 var event_model = mongoose.model('event');
+var error = require('debug')('gomeetup:internal_error');
 // Exceptions
 var InvalidRequestException = require('../exceptions/InvalidRequestException');
 
@@ -36,14 +37,16 @@ module.exports.get_event = (req, res) => {
     }
     event_model.findOne({ _id: id }).then(event => {
       res.send(event);
-    }).catch(error => {
-      res.status(500).send({ error: error.message, error_type: error.name });
+    }).catch(e => {
+      error(e);
+      res.status(500).send({ error: e.message, error_type: e.name });
     });
   } else {
     event_model.find().then(events => {
       res.send(events);
-    }).catch(error => {
-      res.status(500).send({ error: error.message, error_type: error.name });
+    }).catch(e => {
+      error(e);
+      res.status(500).send({ error: e.message, error_type: e.name });
     });;
   }
 };
@@ -53,9 +56,10 @@ module.exports.create_event = (req, res) => {
   new_event.save()
     .then(event => {
       res.send(event);
-    }).catch(error => {
-    res.status(500).send({ error: error.message, error_type: error.name });
-  });
+    }).catch(e => {
+      error(e);
+      res.status(500).send({ error: e.message, error_type: e.name });
+    });
 }
 
 module.exports.remove_event = (req, res) => {
@@ -71,9 +75,10 @@ module.exports.remove_event = (req, res) => {
         throw new InvalidRequestException('No event found with provided id');
       }
       res.send(event);
-    }).catch(InvalidRequestException, error => {
-      res.status(400).send({ error: error.message });
-    }).catch(error => {
-      res.status(500).send({ error: error.message, error_type: error.name });
+    }).catch(InvalidRequestException, e => {
+      res.status(400).send({ error: e.message });
+    }).catch(e => {
+      error(e);
+      res.status(500).send({ error: e.message, error_type: e.name });
     });
 }
