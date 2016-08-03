@@ -43,3 +43,34 @@ module.exports.get_nearby_events = (req, res) => {
     res.status(500).send({ error: e.message, error_type: e.name });
   });
 };
+
+/**
+ * GET gets event(s) by id(s) (comma seperated)
+ * URL: /api/events/:ids
+ * JWT REQUIRED: yes
+ * PERMISSIONS: 'events:read'
+ * BODY: none
+ */
+module.exports.get_event = (req, res) => {
+  var id_regex = /^(?:\w{24}(?:(?=\,\w{24})\,)*)+$/;
+  var ids = req.params.ids;
+  if (!id_regex.test(ids)) {
+    return res.status(400).send({ message: 'invalid id(s)' });
+  }
+  if (ids.indexOf(',')) {
+    ids = ids.split(',');
+  } else {
+    ids = [ids];
+  }
+
+  event_meta_model.find({
+    _id: {
+      $in: ids
+    }
+  }).then( events => {
+    res.status(200).send({events});
+  }).catch( e => {
+    error(e);
+    res.status(500).send({ error: e.message, error_type: e.name });
+  });
+};
