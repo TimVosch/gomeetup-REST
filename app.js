@@ -16,11 +16,11 @@ mongoose.Promise = Promise;
  */
 if (process.env.NODE_ENV == 'testing') {
   app.set('testing', true);
-  debug('====# Testing mode! #====');
+  console.log('====# Testing mode! #====');
 }
 if (process.env.NODE_ENV == 'development') {
   app.set('development', true);
-  debug('====# DEV mode #====');
+  console.log('====# DEV mode #====');
 }
 
 /**
