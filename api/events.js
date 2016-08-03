@@ -1,84 +1,45 @@
-/**
- * Events exist of a location, type etc. They can be created, retrieved, edited, joined, left etc
- */
-
 var mongoose = require('mongoose');
-var event_model = mongoose.model('event');
+var event_meta_model = mongoose.model('event_meta');
 var error = require('debug')('gomeetup:internal_error');
-// Exceptions
-var InvalidRequestException = require('../exceptions/InvalidRequestException');
+var debug = require('debug')('gomeetup:events');
 
 /**
- * Verify an id as ObjectId for MongoDB
- * If possible convert it.
+ * GET gets nearby events
+ * URL: /api/events/:lon/:lat/:distance?
+ * JWT REQUIRED: yes
+ * PERMISSIONS: 'events:nearby'
+ * BODY: none
  */
-function verifyAndConvertId(id, res) {
-  if (id === undefined || typeof id == typeof undefined)
-    res.status(400).send({ success: false, message: "No id provided" });
-  else {
-    try {
-      return mongoose.Types.ObjectId(id);
-    } catch (e) {
-      res.status(400).send({ success: false, message: "Provided id is invalid" });
-      return false;
-    }
+module.exports.get_nearby_events = (req, res) => {
+  var decimal_regex = /^\d+\.{0,1}\d*$/;
+  var distance = 3000;
+  if (req.params.distance && decimal_regex.test(req.params.distance)) {
+    distance = parseInt(req.params.distance);
   }
-}
-
-module.exports = {};
-
-module.exports.get_event = (req, res) => {
-  // Respond with specific event if id is specified --> e.g. /events/09a8afee792bc9de091
-  if (!!req.params.id) {
-    var id = verifyAndConvertId(req.params.id);
-    if (!id) {
-      res.status(400).send({ error: 'Invalid event id' });
-      return;
-    }
-    event_model.findOne({ _id: id }).then(event => {
-      res.send(event);
-    }).catch(e => {
-      error(e);
-      res.status(500).send({ error: e.message, error_type: e.name });
-    });
-  } else {
-    event_model.find().then(events => {
-      res.send(events);
-    }).catch(e => {
-      error(e);
-      res.status(500).send({ error: e.message, error_type: e.name });
-    });;
+  if (!decimal_regex.test(req.params.longitude) || !decimal_regex.test(req.params.latitude)) {
+    return res.status(400).send({ message: 'Invalid longitude or latitude' });
   }
-};
 
-module.exports.create_event = (req, res) => {
-  var new_event = new event_model(req.body);
-  new_event.save()
-    .then(event => {
-      res.send(event);
-    }).catch(e => {
-      error(e);
-      res.status(500).send({ error: e.message, error_type: e.name });
-    });
-}
-
-module.exports.remove_event = (req, res) => {
-  // Convert ID and remove the item
-  var id = verifyAndConvertId(req.params.id, res);
-  if (!id) {
-    res.status(400).send({ error: 'Invalid event id' });
-    return;
-  }
-  event_model.findByIdAndRemove(id).then(event => {
-      // Check if an event was removed
-      if (!event) {
-        throw new InvalidRequestException('No event found with provided id');
+  event_meta_model.find({
+    location: {
+      $near: {
+        $geometry: {
+          type: "Point",
+          coordinates: [
+            parseFloat(req.params.longitude),
+            parseFloat(req.params.latitude)
+          ]
+        },
+        $maxDistance: distance,
+        $minDistance: 0
       }
-      res.send(event);
-    }).catch(InvalidRequestException, e => {
-      res.status(400).send({ error: e.message });
-    }).catch(e => {
-      error(e);
-      res.status(500).send({ error: e.message, error_type: e.name });
-    });
-}
+    }
+  })
+  .then( events => {
+    res.status(200).send({events});
+  })
+  .catch( e => {
+    error(e);
+    res.status(500).send({ error: e.message, error_type: e.name });
+  });
+};
