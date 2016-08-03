@@ -11,7 +11,7 @@ var debug = require('debug')('gomeetup:events');
  * BODY: none
  */
 module.exports.get_nearby_events = (req, res) => {
-  var decimal_regex = /^\d+\.{0,1}\d*$/;
+  var decimal_regex = /^\-?\d+\.{0,1}\d*$/;
   var distance = 3000;
   if (req.params.distance && decimal_regex.test(req.params.distance)) {
     distance = parseInt(req.params.distance);
