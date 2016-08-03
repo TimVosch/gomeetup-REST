@@ -1,3 +1,4 @@
+var dotenv = require('dotenv').config({ silent: true });
 var express = require('express');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
