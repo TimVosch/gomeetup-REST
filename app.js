@@ -28,7 +28,7 @@ if (process.env.NODE_ENV == 'development') {
  */
 
 app.set('jwt_secret', process.env.APP_TOKEN_SECRET || 'DEBUG');
-app.set('jwt_expiration', process.env.APP_TOKEN_TIMEOUT || 60*60*24);
+app.set('jwt_expiration', process.env.APP_TOKEN_TIMEOUT || '1d');
 
 /**
  * Default permissions for a new user.
