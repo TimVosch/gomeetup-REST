@@ -18,6 +18,10 @@ if (process.env.NODE_ENV == 'testing') {
   app.set('testing', true);
   debug('====# Testing mode! #====');
 }
+if (process.env.NODE_ENV == 'development') {
+  app.set('development', true);
+  debug('====# DEV mode #====');
+}
 
 /**
  * Get JWT settings from environment and store in Express.
@@ -42,11 +46,16 @@ app.set('default_permissions', {
  */
 if (app.get('testing') == true){
   mongoose.connect("mongodb://localhost/gomeetup_test");
+} else if(app.get('development') == true) {
+  mongoose.connect("mongodb://localhost/gomeetup_dev");
 } else {
-  mongoose.connect("mongodb://localhost/test");
+  mongoose.connect("mongodb://localhost/gomeetup");
 }
 var db = mongoose.connection;
 
+/**
+ * Load all mongoose models
+ */
 require('./models/load_models').load();
 
 /**
