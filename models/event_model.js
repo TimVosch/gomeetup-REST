@@ -1,9 +1,13 @@
 var mongoose = require('mongoose');
-var event_schema = require('../schemas/event_schema');
 
-module.exports = () => {
-  mongoose.model('event', event_schema);
-};
+// Export the schema
+module.exports.name = 'event';
+module.exports.collection = 'events';
+module.exports.schema = new mongoose.Schema({
+  type: {type: String, required: true},
+  name: {type: String, required: true},
+  creator: {type: String, required: true},
+});
 
 /**
  * The events collection contains all existing events.
@@ -12,6 +16,7 @@ module.exports = () => {
  *     - `longitude`
  *     - `type`
  *     - `name`
+ *     - `creator`
  * 
  * * Subject to change
  */

@@ -1,9 +1,12 @@
 var mongoose = require('mongoose');
-var user_authentication_schema = require('../schemas/user_authentication_schema');
 
-module.exports = () => {
-  mongoose.model('user_authentication', user_authentication_schema);
-};
+module.exports.name = 'user_authentication';
+module.exports.collection = 'user_authentication';
+module.exports.schema = new mongoose.Schema({
+  username: {type: String, required: true, unique: true, match: /^[\w]{6,}$/},
+  password: {type: String, required: true, match: /^.{6,}$/},
+  user: {type: mongoose.Schema.Types.ObjectId, required: true, ref: 'user_information'}
+});
 
 /**
  * The user_authentications collection contains credentials and linked information.

@@ -1,12 +1,20 @@
 var mongoose = require('mongoose');
-var user_information_schema = require('../schemas/user_information_schema');
 
-module.exports = () => {
-  mongoose.model('user_information', user_information_schema, 'user_information');
-};
+module.exports.name = 'user_information';
+module.exports.collection = 'user_information';
+module.exports.schema = new mongoose.Schema({
+  first_name: {type: String, required: true},
+  last_name: {type: String, required: true},
+  email: {type: String, required: true, unique: true, match: /^([\w\.-]+(?=@))\@([\w\.-]+(?=\.))\.(\w+)$/},
+  permissions: {type: Object, required: true},
+});
 
 /**
- * The user_information collections contains general information about a user:
- *     - `permissions`
- * 
+ * This document contains the permissions for a certain user.
+ * The user is identified by his/her ObjectId.
+ * The permissions is built as follow:
+{
+  "events": ["read", "create", "update"],
+  "tokens": ["create"]
+}
  */

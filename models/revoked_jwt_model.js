@@ -1,9 +1,12 @@
 var mongoose = require('mongoose');
-var revoked_jwts_schema = require('../schemas/revoked_jwt_schema');
 
-module.exports = () => {
-  mongoose.model('revoked_jwt', revoked_jwts_schema);
-};
+module.exports.name = 'revoked_jwt';
+module.exports.collection = 'revoked_jwts';
+module.exports.schema = new mongoose.Schema({
+  jwt_uuid: { type: String, required: true, unique: true },
+  reason: { type: String, required: false },
+  expires_at: { type: Date, required: true, expires: 1 }
+});
 
 /**
  * The revoked_jwts collection revokes usage of specified JWT.
