@@ -17,7 +17,7 @@ module.exports.get_nearby_events = (req, res) => {
     distance = parseInt(req.params.distance);
   }
   if (!decimal_regex.test(req.params.longitude) || !decimal_regex.test(req.params.latitude)) {
-    return res.status(400).send({ message: 'Invalid longitude or latitude' });
+    return res.status(400).send({ error: 'Invalid longitude or latitude' });
   }
 
   event_meta_model.find({
