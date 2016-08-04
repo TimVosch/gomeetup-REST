@@ -6,10 +6,13 @@ module.exports.collection = 'event_metas';
 module.exports.schema = new mongoose.Schema({
   type: {type: String, enum: [ 'meetup', 'event' ], required: true},
   name: {type: String, required: true},
+  description: {type: String, required: true},
   creator: {type: String, required: true},
+  participants: [{ type: mongoose.Types.ObjectId, ref: 'user_information' }],
   location: {
     type: [Number],
-    index: '2dsphere'
+    index: '2dsphere',
+    required: true
   }
 });
 

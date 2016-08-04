@@ -101,42 +101,49 @@ helper.dummy_events = [
     type: 'meetup',
     name: '1 km',
     creator: 'test creator',
+    description: 'description',
     location: [-39.72827, 52.49004]
   },
   {
     type: 'meetup',
     name: '1.5 km',
     creator: 'test creator',
+    description: 'description',
     location: [-39.72132, 52.48994]
   },
   {
     type: 'meetup',
     name: '2.5 km',
     creator: 'test creator',
+    description: 'description',
     location: [-39.70622, 52.48978]
   },
   {
     type: 'meetup',
     name: '3 km',
     creator: 'test creator',
+    description: 'description',
     location: [-39.69883, 52.48983]
   },
   {
     type: 'meetup',
     name: '3.5 km',
     creator: 'test creator',
+    description: 'description',
     location: [-39.6918, 52.48983]
   },
   {
     type: 'meetup',
     name: '5 km',
     creator: 'test creator',
+    description: 'description',
     location: [-39.66905, 52.48994]
   },
   {
     type: 'meetup',
     name: '6 km',
     creator: 'test creator',
+    description: 'description',
     location: [-39.65506, 52.48999]
   }
 ];
