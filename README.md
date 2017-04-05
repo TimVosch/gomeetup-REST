@@ -30,11 +30,58 @@ The node env file can be used to pass the following variables:
  - ```APP_TOKEN_SECRET=DEBUG``` This is the secret that signs the JWT tokens. (**CHANGE THIS**)
  - ```APP_TOKEN_EXPIRATION=86400``` The expire time in seconds for the JWT token.
 
+Sample run
+---
+1 - Create user
+```
+curl -X POST --header 'Content-Type: application/x-www-form-urlencoded' --header 'Accept: application/json' -d 'username=?&password=?&first_name=?&last_name=?&email=?' 'http://localhost:8080/api/authentication/user'
+ ```
+
+2 - Basic auth to generate JWT token
+
+```
+curl -u username:password http://localhost:8080/api/authentication/user
+```
+
+3 - Check to see events (copy/paste from TEST database)
+```
+http://localhost:8080/api/events/
+```
+
+4 - (For testing only) Allow User to Revoke self JWT - Update user_information collection to the following:
+```$xslt
+"permissions" : {
+        "events" : [ 
+            "read"
+        ],
+
+        "jwt" : [ 
+            "revoke"
+        ]
+    },
+```
+5 - Request to Revoke token 
+```
+DELETE http://localhost:8080/api/authentication/jwt/revoke
+{
+	"token": "?", 
+	"reason": "?"
+}
+```
+6 - Repeat step 3, should show 
+```$xslt
+{"error":true,"message":"Failed to authenticate token"}
+``` 
+
+
+
 License
 ---
     The MIT License (MIT)
     
+    
     Copyright (c) 2016 Tim van Osch
+    Copyright (c) 2017 Saidur Rahman
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

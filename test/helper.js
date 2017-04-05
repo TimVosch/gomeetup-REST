@@ -13,7 +13,7 @@ var jwt = require('jsonwebtoken');
 var uuid = require('uuid');
 var app = require('../app');
 var server = supertest.agent(app);
-var clearDB = require('mocha-mongoose')('mongodb://localhost/gomeetup_test');
+var clearDB = require('mocha-mongoose')(process.env.DB_TEST);
 var chai = require('chai');
 Promise = bluebird.Promise;
 chai.should();
