@@ -45,11 +45,11 @@ app.set('default_permissions', {
  * Connect to MongoDB server
  */
 if (app.get('testing') == true){
-  mongoose.connect("mongodb://localhost/gomeetup_test");
+  mongoose.connect(process.env.DB_TEST);
 } else if(app.get('development') == true) {
-  mongoose.connect("mongodb://localhost/gomeetup_dev");
+  mongoose.connect(process.env.DB_DEV);
 } else {
-  mongoose.connect("mongodb://localhost/gomeetup");
+  mongoose.connect(process.env.DB_PROD);
 }
 var db = mongoose.connection;
 
@@ -82,5 +82,4 @@ db.once('open', function () {
  * Report errors
  */
 db.on('error', console.error.bind(console, 'connection error:'));
-
 module.exports = app;

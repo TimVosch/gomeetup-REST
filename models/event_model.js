@@ -8,7 +8,7 @@ module.exports.schema = new mongoose.Schema({
   name: {type: String, required: true},
   description: {type: String, required: true},
   creator: {type: String, required: true},
-  participants: [{ type: mongoose.Types.ObjectId, ref: 'user_information' }],
+  participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user_information' }],
   location: {
     type: [Number],
     index: '2dsphere',
